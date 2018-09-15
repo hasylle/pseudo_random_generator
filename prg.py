@@ -1,20 +1,52 @@
 import hashlib
+import _md5
 from datetime import datetime
+
+def shift_lfsr(seed,mask_bits):
+    lfsr = seed
+    feedback = seed & 1
+    while True:
+        lfsr >>= 1
+        if feedback == 1:
+            lfsr ^= mask_bits
+            break
+        else:
+            feedback = lfsr & 1
+    return lfsr
 
 
 def pseudo_random(seed,N):
-    hash = str(seed).encode()
-    k = 0;
-    rand = [];
+    k = 0
+    rand = []
+    print(seed)
+    shift_bits = seed % 5
+    c = (seed ^ seed << shift_bits) & 0xFFFFFF
+    print(c)
+    a = (seed ^ c >> shift_bits) & 0xFFFFFF
+    print(a)
     while k<N:
-        now = datetime.now()
-        hash = hashlib.sha256(hash * now.microsecond).digest()
-        for c in hash:
-            rand.append(c/255)
-            break;
-        k=k+1;
+        # first algorithm -- linear congruential
+        rand.append((a * seed + c))
+        c = rand[k]
+        #second algorithm -- LFSR
+        lfsr = shift_lfsr(int(rand[k] * a), c)
+        lfsr = shift_lfsr(lfsr,c)
+        rand[k] = (lfsr & 0xffffff)
+        #insert 2nd algorithm here
+
+        #insert 3rd algorithm here
+
+        #finally convert range to [0,1]
+        rand[k] = rand[k] / 0xffffff
+        k+=1
+    if N == 1:
+        return rand[0]
     return rand
+
+
+
+
 if __name__ == '__main__':
-    rand = pseudo_random(0.2, 10);
-    for a in rand:
-        print(a)
+    input = datetime.now().microsecond
+    rand = pseudo_random(input, 10000)
+    print(rand)
