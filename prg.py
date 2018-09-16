@@ -18,10 +18,10 @@ def shift_lfsr(seed):
         lfsr ^= 0xB400
     return lfsr
 
-def wilchman_hill(seed):
+def wichmann_hill(seed):
     """
-    Wichman-Hill generator via linear congruential
-    Formula for Wichman-Hill generator:
+    Wichmann-Hill generator via linear congruential
+    Formula for Wichmann-Hill generator:
     rand = (x_n/m1 + y_n/m2 + z_n/m3) mod 1
     :param seed:
     :return: ret_val: random number generated
@@ -49,7 +49,7 @@ def pseudo_random(seed,N):
         """
         Second algorithm -- Wichman-Hill generator via linear congruential
         """
-        rand[k] = wilchman_hill(rand[k])
+        rand[k] = wichmann_hill(rand[k])
         k+=1
     if N == 1:
         return rand[0]
